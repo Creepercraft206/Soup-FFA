@@ -1,0 +1,10 @@
+name: Soup-FFA
+version: '${project.version}'
+main: hgpractice.soupffa.SoupFFA
+authors: [ Creeper_craft ]
+website: hg-practice.de
+commands:
+  stats:
+    description: Sehe deine Stats für SoupFFA ein!
+  setspawn:
+    description: Setzt den Spawn
