@@ -1,124 +1,41 @@
 package Utils;
 
+import de.hgpractice.hgpgameapi.SQL.SQLHandler;
+
 import java.sql.*;
+import java.util.UUID;
 
-public class MySQLCoins {
-    public static Connection con;
+public class MySQLCoins extends SQLHandler {
 
-    public MySQLCoins() {
+    public MySQLCoins(String host, int port, String database, String username, String password) {
+        super(host, port, database, username, password);
     }
 
-    public static void connect() {
-        if (!isConnected()) {
-            try {
-                con = DriverManager.getConnection("jdbc:mysql://" + "localhost" + ":" + 3306 + "/" + "coins" + "?autoReconnect=true", "root", "!@2Ramonsora");
-                System.out.println("Die MySQL Verbindung wurde erfolgreich aufgebaut.");
-            } catch (SQLException var1) {
-                var1.printStackTrace();
-            }
-        }
-
+    @Override
+    public void createTable() {
+        query("CREATE TABLE IF NOT EXISTS coins (UUID VARCHAR(100) UNIQUE, coins VARCHAR(100));");
     }
 
-    public static void close() {
-        if (isConnected()) {
-            try {
-                con.close();
-                System.out.println("Die MySQL Verbindung wurde erfolgreich geschlossen.");
-            } catch (SQLException var1) {
-                var1.printStackTrace();
-            }
-        }
-
+    public void setCoins(UUID uuid, int coins) {
+        query("UPDATE coins SET coins='" + coins + "' WHERE UUID='" + uuid + "';");
     }
 
-    public static boolean isConnected() {
-        return con != null;
-    }
-
-    public static void update(String query) {
-        PreparedStatement ps = null;
-
+    public int getCoins(UUID uuid) {
+        int p = 0;
         try {
-            ps = con.prepareStatement(query);
-            ps.executeUpdate();
-        } catch (SQLException var11) {
-            var11.printStackTrace();
-        } finally {
-            try {
-                ps.close();
-            } catch (SQLException var10) {
-                var10.printStackTrace();
+            ResultSet result = getQueryResult("SELECT coins FROM coins WHERE UUID='" + uuid + "';");
+            if (result != null && result.next()) {
+                p = Integer.parseInt(result.getString("coins"));
             }
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
+        return p;
     }
 
-    public static void insert(String table, String[] values) {
-        try {
-            String in = "?";
-
-            for(int i = 1; i < values.length; ++i) {
-                in = String.valueOf(String.valueOf(in)) + ", ?";
-            }
-
-            PreparedStatement State = con.prepareStatement("INSERT INTO " + table + " values(" + in + ");");
-
-            for(int index = 1; index <= values.length; ++index) {
-                State.setString(index, values[index - 1]);
-            }
-
-            State.execute();
-            State.close();
-        } catch (Exception var5) {
-            var5.printStackTrace();
-        }
-
-    }
-
-    public static ResultSet getResult(String query) {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = con.prepareStatement(query);
-            rs = ps.executeQuery();
-            return rs;
-        } catch (SQLException var4) {
-            var4.printStackTrace();
-            return null;
-        }
-    }
-
-    public static boolean isRegistered(String query) {
-        boolean bool = false;
-
-        try {
-            ResultSet rs = getResult(query);
-
-            try {
-                bool = rs.next();
-            } catch (SQLException var8) {
-                bool = false;
-            } finally {
-                rs.close();
-            }
-        } catch (SQLException var10) {
-            var10.printStackTrace();
-        }
-
-        return bool;
-    }
-
-    public static void createTables() {
-        if (isConnected()) {
-            try {
-                con.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS coins (UUID VARCHAR(100) UNIQUE, name VARCHAR(100), coins VARCHAR(100));");
-            } catch (SQLException var1) {
-                var1.printStackTrace();
-            }
-        }
-
+    public void addCoins(UUID uuid, int coins) {
+        int c = getCoins(uuid);
+        c += coins;
+        setCoins(uuid, c);
     }
 }

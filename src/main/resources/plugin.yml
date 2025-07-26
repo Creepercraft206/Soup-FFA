@@ -1,10 +1,13 @@
 name: Soup-FFA
 version: '${project.version}'
 main: hgpractice.soupffa.SoupFFA
-authors: [ Creeper_craft ]
-website: hg-practice.de
+author: "Tim Bahlinger (Creeper_craft)"
+depend:
+  - HGP-GameAPI
 commands:
   stats:
-    description: Sehe deine Stats für SoupFFA ein!
-  setspawn:
-    description: Setzt den Spawn
+    description: Displays the own players stats or the stats of a specified player.
+  setloc:
+    aliases:
+      - setlocation
+    description: Sets a location. Available locations are spawn, pos1 and pos2.

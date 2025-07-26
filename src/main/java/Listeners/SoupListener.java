@@ -1,5 +1,6 @@
 package Listeners;
 
+import hgpractice.soupffa.SoupFFA;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,12 +9,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class SoupListener implements Listener {
 
-    @SuppressWarnings("deprecation")
     @EventHandler
     public void onSoup(PlayerInteractEvent e) {
         Player p = e.getPlayer();
-        if (p.getItemInHand().getType() == Material.MUSHROOM_SOUP){
-            int heal = 7;
+        if (p.getItemInHand().getType() == Material.MUSHROOM_SOUP) {
+            int heal = SoupFFA.soupHeal;
             if (p.getHealth() < 20) {
                 if (p.getHealth() + heal <= 20) {
                     p.setHealth(p.getHealth() + heal);

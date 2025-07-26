@@ -1,7 +1,7 @@
 package Commands;
 
-import Utils.ConfigManager;
-import Utils.StatsHandler;
+import Utils.Messages;
+import de.hgpractice.hgpgameapi.Player.GamePlayer;
 import hgpractice.soupffa.SoupFFA;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,24 +18,31 @@ public class StatsCmd implements CommandExecutor {
         if (sender instanceof Player) {
             Player p = (Player) sender;
             if (args.length == 0) {
-                double kd = (double) StatsHandler.getKills(p.getUniqueId()) / (double) StatsHandler.getTode(p.getUniqueId());
-                p.sendMessage("§8§m----------------------------");
-                p.sendMessage("§7» §cSoup-FFA §7Stats von " + p.getName());
-                p.sendMessage("§7Kills: §6" + StatsHandler.getKills(p.getUniqueId()));
-                p.sendMessage("§7Tode: §6" + StatsHandler.getTode(p.getUniqueId()));
-                p.sendMessage("§7K/D: §6" + Math.round(kd * 100.0) / 100.0);
-                p.sendMessage("§8§m----------------------------");
+                getStats(p, p);
             } else {
                 OfflinePlayer target = Bukkit.getServer().getOfflinePlayer(args[0]);
-                double kd = (double) StatsHandler.getKills(target.getUniqueId()) / (double) StatsHandler.getTode(target.getUniqueId());
-                p.sendMessage("§8§m----------------------------");
-                p.sendMessage("§7» §cSoup-FFA §7Stats von " + target.getName());
-                p.sendMessage("§7Kills: §6" + StatsHandler.getKills(target.getUniqueId()));
-                p.sendMessage("§7Tode: §6" + StatsHandler.getTode(target.getUniqueId()));
-                p.sendMessage("§7K/D: §6" + Math.round(kd * 100.0) / 100.0);
-                p.sendMessage("§8§m----------------------------");
+                if (target == null || !target.hasPlayedBefore()) {
+                    p.sendMessage(Messages.playerNotFound.replace("%player%", args[0]));
+                    return false;
+                }
+                getStats(p, target.getPlayer());
             }
         }
         return false;
+    }
+
+    private void getStats(Player receiving, Player target) {
+        GamePlayer gamePlayer = GamePlayer.getPlayer(target);
+        int kills = (int) gamePlayer.getAttribute("kills");
+        int deaths = (int) gamePlayer.getAttribute("deaths");
+        double kd = deaths == 0 ? kills : (double) kills / deaths;
+        String[] msgLines = Messages.statsMessage.split("\n");
+        for (String msgLine : msgLines) {
+            receiving.sendMessage(msgLine
+                    .replace("%player%", target.getName())
+                    .replace("%kills%", String.valueOf(SoupFFA.getSqlStats().getStats(target.getUniqueId(), "kills")))
+                    .replace("%deaths%", String.valueOf(SoupFFA.getSqlStats().getStats(target.getUniqueId(), "deaths")))
+                    .replace("%kd%", String.valueOf(Math.round(kd * 100.0) / 100.0)));
+        }
     }
 }

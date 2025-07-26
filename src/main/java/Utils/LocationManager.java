@@ -1,26 +1,24 @@
 package Utils;
 
-import hgpractice.soupffa.SoupFFA;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
 
 public class LocationManager {
 
-    public static void setLocation(String name, Player p){
-        File ordner = new File("plugins//SoupFFA//");
-        File file = new File("plugins//SoupFFA//" + name + ".yml");
+    public static void setLocation(String name, Location loc) {
+        File folder = new File("plugins//SoupFFA//Locations//");
+        File file = new File("plugins//SoupFFA//Locations//" + name + ".yml");
 
-        if(!ordner.exists()){
-            ordner.mkdir();
+        if (!folder.exists()){
+            folder.mkdir();
         }
-        if(!file.exists()){
+        if (!file.exists()){
             try {
                 file.createNewFile();
             } catch (IOException e) {
@@ -29,12 +27,11 @@ public class LocationManager {
         }
 
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-        Location loc = p.getLocation();
 
         cfg.set("X", loc.getX());
         cfg.set("Y", loc.getY());
         cfg.set("Z", loc.getZ());
-        cfg.set("Welt", loc.getWorld().getName());
+        cfg.set("World", loc.getWorld().getName());
         cfg.set("Yaw", loc.getYaw());
         cfg.set("Pitch", loc.getPitch());
 
@@ -45,20 +42,23 @@ public class LocationManager {
         }
     }
 
-    public static void useLocation(Player p, String name){
-        File file = new File("plugins//SoupFFA//" + name + ".yml");
+    public static Location getLocation(String name) {
+        File file = new File("plugins//SoupFFA//Locations//" + name + ".yml");
+        if (file.exists()){
+            FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 
-        if(!file.exists()){
-            p.sendMessage(SoupFFA.prefix + "Die Location wurde nicht gefunden");
+            World world = Bukkit.getWorld(cfg.getString("World"));
+            double yaw = cfg.getDouble("Yaw");
+            double pitch = cfg.getDouble("Pitch");
+            return new Location(world, cfg.getDouble("X"), cfg.getDouble("Y"), cfg.getDouble("Z"), (float) yaw, (float) pitch);
+        } else {
+            return null;
         }
+    }
 
-        FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-
-        World welt = Bukkit.getWorld(cfg.getString("Welt"));
-        double yaw = cfg.getDouble("Yaw");
-        double pitch = cfg.getDouble("Pitch");
-
-        p.teleport(new Location(welt, cfg.getDouble("X"), cfg.getDouble("Y"), cfg.getDouble("Z"), (float) yaw, (float) pitch));
+    public static boolean locationExists(String name) {
+        File file = new File("plugins//SoupFFA//Locations//" + name + ".yml");
+        return file.exists();
     }
 
 }

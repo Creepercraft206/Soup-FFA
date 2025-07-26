@@ -1,125 +1,51 @@
 package Utils;
 
-import java.sql.*;
+import de.hgpractice.hgpgameapi.SQL.SQLHandler;
 
-public class MySQLStats {
-    public static Connection con = null;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.UUID;
 
-    public MySQLStats() {
+public class MySQLStats extends SQLHandler {
+
+    public MySQLStats(String host, int port, String database, String username, String password) {
+        super(host, port, database, username, password);
     }
 
-    public static void connect() {
-        if (!isConnected()) {
-            try {
-                con = DriverManager.getConnection("jdbc:mysql://" + "localhost" + ":" + 3306 + "/" + "ffa" + "?autoReconnect=true", "root", "!@2Ramonsora");
-                System.out.println("Die MySQL Verbindung wurde erfolgreich aufgebaut.");
-            } catch (SQLException var1) {
-                var1.printStackTrace();
-            }
-        }
-
+    @Override
+    public void createTable() {
+        query("CREATE TABLE IF NOT EXISTS stats (UUID VARCHAR(100) UNIQUE, kills INT, deaths INT);");
     }
 
-    public static void close() {
-        if (isConnected()) {
-            try {
-                con.close();
-                System.out.println("Die MySQL Verbindung wurde erfolgreich geschlossen.");
-            } catch (SQLException var1) {
-                var1.printStackTrace();
-            }
-        }
-
+    public void setStats(UUID uuid, String column, int value) {
+        query("UPDATE stats SET " + column + "='" + value + "' WHERE UUID='" + uuid + "';");
     }
 
-    public static boolean isConnected() {
-        return con != null;
-    }
-
-    public static void update(String query) {
-        PreparedStatement ps = null;
-
+    public int getStats(UUID uuid, String column) {
+        int p = 0;
+        PreparedStatement State = null;
+        ResultSet rs = null;
         try {
-            ps = con.prepareStatement(query);
-            ps.executeUpdate();
-        } catch (SQLException var11) {
-            var11.printStackTrace();
+            rs = getQueryResult("SELECT " + column + " FROM stats WHERE UUID='" + uuid + "';");
+            if (rs != null && rs.next()) {
+                p = Integer.parseInt(rs.getString(column));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             try {
-                ps.close();
-            } catch (SQLException var10) {
-                var10.printStackTrace();
+                if (rs != null) rs.close();
+                if (State != null) State.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
         }
-
+        return p;
     }
 
-    public static void insert(String table, String[] values) {
-        try {
-            String in = "?";
-
-            for(int i = 1; i < values.length; ++i) {
-                in = String.valueOf(String.valueOf(in)) + ", ?";
-            }
-
-            PreparedStatement State = con.prepareStatement("INSERT INTO " + table + " values(" + in + ");");
-
-            for(int index = 1; index <= values.length; ++index) {
-                State.setString(index, values[index - 1]);
-            }
-
-            State.execute();
-            State.close();
-        } catch (Exception var5) {
-            var5.printStackTrace();
-        }
-
-    }
-
-    public static ResultSet getResult(String query) {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            ps = con.prepareStatement(query);
-            rs = ps.executeQuery();
-            return rs;
-        } catch (SQLException var4) {
-            var4.printStackTrace();
-            return null;
-        }
-    }
-
-    public static boolean isRegistered(String query) {
-        boolean bool = false;
-
-        try {
-            ResultSet rs = getResult(query);
-
-            try {
-                bool = rs.next();
-            } catch (SQLException var8) {
-                bool = false;
-            } finally {
-                rs.close();
-            }
-        } catch (SQLException var10) {
-            var10.printStackTrace();
-        }
-
-        return bool;
-    }
-
-    public static void createTables() {
-        if (isConnected()) {
-            try {
-                con.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS kills (UUID VARCHAR(100) UNIQUE, name VARCHAR(100), kills VARCHAR(100));");
-                con.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS tode (UUID VARCHAR(100) UNIQUE, name VARCHAR(100), tode VARCHAR(100));");
-            } catch (SQLException var1) {
-                var1.printStackTrace();
-            }
-        }
-
+    public void addStats(UUID uuid, String column, int value) {
+        int c = getStats(uuid, column);
+        c += value;
+        setStats(uuid, column, c);
     }
 }
