@@ -4,6 +4,7 @@ public class Messages {
 
     public static String prefix;
     public static String noPerms;
+    public static String setLocNoArgs;
     public static String ScoreboardTitle;
     public static String[] ScoreboardLines = new String[15];
     public static String setLocation;

@@ -110,6 +110,7 @@ public final class SoupFFA extends JavaPlugin {
 
         Messages.setLocation = configHandler.getSetting("Set-Location").toString().replace("&", "§").replace("%prefix%", Messages.prefix);
         Messages.locationUnavailable = configHandler.getSetting("Location-Unavailable").toString().replace("&", "§").replace("%prefix%", Messages.prefix);
+        Messages.setLocNoArgs = configHandler.getSetting("Set-Location-No-Args").toString().replace("&", "§").replace("%prefix%", Messages.prefix);
         Messages.playerNotFound = configHandler.getSetting("Player-Not-Found").toString().replace("&", "§").replace("%prefix%", Messages.prefix);
         Messages.locationNotSet = configHandler.getSetting("Location-Not-Set").toString().replace("&", "§").replace("%prefix%", Messages.prefix);
         Messages.playerDeath = configHandler.getSetting("Player-Death").toString().replace("&", "§").replace("%prefix%", Messages.prefix);
@@ -160,6 +161,7 @@ public final class SoupFFA extends JavaPlugin {
         configHandler.addSetting("No-Permissions", "%prefix% &cDazu hast du keine Rechte!");
         configHandler.addSetting("Set-Location", "%prefix% &7Du hast die Location &6%location% &7erfolgreich gesetzt!");
         configHandler.addSetting("Location-Unavailable", "%prefix% &cErlaubte Locations: Spawn, Pos1, Pos2");
+        configHandler.addSetting("Set-Location-No-Args", "%prefix% &cBitte benutze: /setloc <Spawn|Pos1|Pos2>");
         configHandler.addSetting("Player-Not-Found", "%prefix% &cDer Spieler &6%player% &cwurde nicht gefunden!");
         configHandler.addSetting("Location-Not-Set", "%prefix% &cDie Location &6%location% &cwurde noch nicht gesetzt! Melde dies bitte einem Admin!");
         configHandler.addSetting("Player-Death", "%prefix% &cDu bist gestorben!");
@@ -200,7 +202,7 @@ public final class SoupFFA extends JavaPlugin {
         configHandler.addSetting("Equip.Fill-Item", "MUSHROOM_SOUP");
 
         // Undroppable items
-        configHandler.addSetting("Undroppable.Items", "IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS,IRON_SWORD,BROWN_MUSHROOM,RED_MUSHROOM,BOWL");
+        configHandler.addSetting("Undroppable.Items", "IRON_HELMET,IRON_CHESTPLATE,IRON_LEGGINGS,IRON_BOOTS,IRON_SWORD,BROWN_MUSHROOM,RED_MUSHROOM");
 
         configHandler.createConfig();
     }

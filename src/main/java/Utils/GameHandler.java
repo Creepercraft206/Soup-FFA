@@ -70,12 +70,13 @@ public class GameHandler {
     }
 
     public void setPvPInv(Player p) {
+        p.getInventory().clear();
         for (int i = 0; i < 36; i++) {
             if (this.equip.get(i) != null) {
                 ItemCreator itemCreator = this.equip.get(i);
-                p.getInventory().addItem(itemCreator.get());
+                p.getInventory().setItem(i, itemCreator.get());
             } else if (this.fillItem != Material.AIR) {
-                p.getInventory().addItem(new ItemCreator(this.fillItem, 1, 0, null, false, null).get());
+                p.getInventory().setItem(i, new ItemCreator(this.fillItem, 1, 0, null, false, null).get());
             }
         }
         p.getInventory().setHelmet(this.helmet != null ? new ItemCreator(this.helmet, 1, 0, "§cHelmet", true, null).get() : null);

@@ -19,7 +19,9 @@ public class setLocCmd implements CommandExecutor, TabCompleter {
         if (sender instanceof Player) {
             Player p = (Player) sender;
             if (p.hasPermission("soupffa.setpos")) {
-                if (args[0].equalsIgnoreCase("Spawn") || args[0].equalsIgnoreCase("Pos1") || args[0].equalsIgnoreCase("Pos2")) {
+                if (args.length == 0) {
+                    p.sendMessage(Messages.setLocNoArgs);
+                } else if (args[0].equalsIgnoreCase("Spawn") || args[0].equalsIgnoreCase("Pos1") || args[0].equalsIgnoreCase("Pos2")) {
                     LocationManager.setLocation(args[0].toLowerCase(), p.getLocation());
                     p.sendMessage(Messages.setLocation.replace("%location%", args[0].toLowerCase()));
                 } else {
